@@ -22,4 +22,5 @@ try:
     ser.open()
     print("Connected...")
 except:
-    sys.exit ("Fout bij het openen van %s. Aaaaarch."  % ser.name)
+    sys.exit ("Fout bij het openen van %s."  % ser.name)
+
