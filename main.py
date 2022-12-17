@@ -1,5 +1,6 @@
 import serial
 import sys
+from Parser import DsmrParser, Influx
 
 ##############################################################################
 # CONFIGS
@@ -32,7 +33,7 @@ else :
 
 ser.xonxoff = 0
 ser.rtscts = 0
-ser.timeout = 60
+ser.timeout = 30
 
 ser.port = "/dev/ttyUSB0"
 
@@ -44,7 +45,11 @@ except:
     sys.exit("Fout bij het openen van %s." % ser.name)
 
 while True:
-    raw = ser.readline()
+    raw = ser.readline().decode('ascii')
     raw_as_string = str(raw)
     line = raw_as_string.strip()
-    print(line)
+    extracted = DsmrParser.extract_input(line)
+
+    if extracted:
+        if extracted[0] in DsmrParser.accepted_codes():
+            Influx.write(extracted[0], DsmrParser.get_floated_value(extracted[1]))
